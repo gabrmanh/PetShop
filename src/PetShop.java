@@ -1,54 +1,60 @@
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class PetShop {
-    private HashMap<String, Pessoa> clientes= new HashMap<>();
+    private final HashMap<String, Person> clients= new HashMap<>();
 
-    public void addPessoa(String cpf, String nome){
-        clientes.put(cpf, new Pessoa(nome, cpf));
+    public void addPerson(String cpf, String nome){
+        Objects.requireNonNull(cpf);
+        Objects.requireNonNull(nome);
+        if(clients.containsKey(cpf)) throw new IllegalArgumentException("Cpf already registered");
+        clients.put(cpf, new Person(nome, cpf));
     }
 
-    public void addCachorro(String cpf, String nomeCachorro, String raca){
-        final Pessoa pessoa = clientes.get(cpf);
-        if (containsPessoa(cpf))
-            pessoa.adopt(nomeCachorro, raca);
+    public void addDog(String cpf, String dogName, String race){
+        final Person person = clients.get(cpf);
+        if (containsPerson(cpf))
+            person.adopt(dogName, race);
         else throw new NoSuchElementException();
     }
 
-    public void removePessoa(String cpf){
-        if (containsPessoa(cpf))
-            clientes.remove(cpf);
-        else throw new NoSuchElementException();
+    public void removePerson(String cpf){
+        if(!containsPerson(cpf)) throw new NoSuchElementException("No such person in database");
+        clients.remove(cpf);
     }
 
-    public void removeCachorro(String cpf, String nomeCachorro){
-        if (containsPessoa(cpf) && pessoaContainsCachorro(cpf, nomeCachorro))
-            clientes.get(cpf).giveAway(nomeCachorro);
-        else throw new NoSuchElementException();
+    public void removeCachorro(String cpf, String dogName){
+        if(!containsPerson(cpf)) throw new NoSuchElementException("No such person in database");
+        if(!personContainsDog(cpf, dogName)) throw new NoSuchElementException("No such dog in this person");
+        clients.get(cpf).giveAway(dogName);
     }
 
-    public boolean containsPessoa(String cpf){
-        return clientes.containsKey(cpf);
+    public boolean containsPerson(String cpf){
+        return clients.containsKey(cpf);
     }
 
-    public boolean pessoaContainsCachorro(String cpf, String nomeCachorro){
-        return clientes.get(cpf).containsCachorro(nomeCachorro);
+    public boolean personContainsDog(String cpf, String dogName){
+        return clients.get(cpf).containsDog(dogName);
     }
 
-    public void listPessoas(){
+    public void listPersons(){
         System.out.println("Lista de clientes:");
-        clientes.values().forEach(System.out::println);
+        clients.values().forEach(System.out::println);
+    } // replace with :
+    public HashMap<String, Person> getClients(){
+        return new HashMap<>(clients);
     }
 
-    public void listCachorros(String cpf){
-        if (containsPessoa(cpf))
-            clientes.get(cpf).listCachorros();
+    public void listDogs(String cpf){
+        if (containsPerson(cpf))
+            clients.get(cpf).listDogs();
         else throw new NoSuchElementException();
     }
 
-    public void listVacinados(Boolean vaccinated, String cpf){
-        if(containsPessoa(cpf))
-            clientes.get(cpf).listVacinados(vaccinated);
+    public void listVaccinated(Boolean vaccinated, String cpf){
+        if(containsPerson(cpf))
+            clients.get(cpf).listVaccinated(vaccinated);
         else throw new NoSuchElementException();
     }
 }
